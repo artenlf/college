@@ -6,6 +6,7 @@
     ".env.*": "dotenv",
     ".prettierrc": "json",
     "*.css": "postcss",
-    "TEST.C": "cpp"
+    "TEST.C": "cpp",
+    "stdio.h": "c"
   }
 }
