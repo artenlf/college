@@ -87,9 +87,17 @@ int read(struct List* list, int position) {
   assert(list != NULL);
   assert(position >= 0 && position < list->length);
   
-  struct Node* aux = list->init;
-  for (int i = 0; i < position; i++) {
-    aux = aux->next;
+  struct Node* aux;
+
+  if (position == 0) {
+    aux = list->init;
+  } else if (position == list->length -1) {
+    aux = list->end;
+  } else {
+    aux = list->init;
+    for (int i = 0; i < position; i++) {
+      aux = aux->next;
+    }
   }
 
   return aux->info;
@@ -143,6 +151,38 @@ int remove_item(struct List* list, int position) {
   }
 }
 
+bool containsItem(struct List* list, int item) {
+    assert(list != NULL);
+    struct Node* currentNode = list->init;
+  
+    while (currentNode != NULL) {
+        if (currentNode->info == item) {
+            return true;
+        }
+
+        currentNode = currentNode->next;
+    }
+
+    return false;
+}
+
+int findIndexOfMinValue(struct List* list) {
+    assert(list != NULL);
+    struct Node* currentNode = list->init;
+
+    int minPosition = 0, min = currentNode->info;
+    for (int i = 0; i < list->length; i++) {
+        if (currentNode->info < min) {
+            minPosition = i;
+            min = currentNode->info;
+        }
+
+        currentNode = currentNode->next;
+    }
+
+    return minPosition;
+}
+
 void freeMemoryList(struct List* list) {
   while(empty(list) == false) {
     remove_item(list, 0);
@@ -150,38 +190,34 @@ void freeMemoryList(struct List* list) {
   free(list);
 }
 
+struct Enemy {
+    const char* name;
+    int distanceFromPlayer;
+};
+
 int main() {
-  struct List* my_list = create();
-  if(empty(my_list) == true) {
-    printf("\nA new empty list has been created!\n");
-  } else {
-    printf("\nOps! Something went wrong!\n");
-  }
+  struct Enemy enemy1, enemy2, enemy3;
+  enemy1.name = "Darth Vader";
+  enemy1.distanceFromPlayer = 10;
 
-  insert(my_list, 0, 5);
-  insert(my_list, 0, 3);
-  insert(my_list, 2, 1);
-  insert(my_list, 3, 7);
-  insert(my_list, 1, 1);
-  insert(my_list, 0, 6);
-  insert(my_list, 5, 6);
-  insert(my_list, 3, 4);
-  insert(my_list, 4, 5);
+  enemy2.name = "Joker";
+  enemy2.distanceFromPlayer = 3;
 
-  print(my_list);
-  printf("\n%d", length(my_list));
+  enemy3.name = "Bowser";
+  enemy3.distanceFromPlayer = 15;
 
-  int value = read(my_list, 2);
-  printf("\nValue at position 2: %d\n", value);
-  
-  update(my_list, 2, 10);
-  print(my_list);
-  
-  int removed_value = remove_item(my_list, 2);
-  printf("\nRemoved value from position 2: %d\n", removed_value);
-  print(my_list);
+  struct Enemy enemies[3] = {enemy1, enemy2, enemy3};
 
-  freeMemoryList(my_list);
+  struct List* distance_list = create();
+
+  insert(distance_list, 0, enemy1.distanceFromPlayer);
+  insert(distance_list, 0, enemy2.distanceFromPlayer);
+  insert(distance_list, 0, enemy3.distanceFromPlayer);
+
+  int closestEnemyPosition = findIndexOfMinValue(distance_list);
+
+  printf("\nThe closest enemy to the player is: %s\n", enemies[closestEnemyPosition].name);
+
 
   return 0;
 }
